@@ -1,0 +1,112 @@
+"","name","api_name","num_teams","id","type1","type2","speed","spdef","spatk","def","atk","hp"
+"1","Aegislash","aegislash-shield",9,681,"ghost","steel",60,150,50,150,50,60
+"2","Aerodactyl","aerodactyl",1,142,"flying","rock",130,75,60,65,105,80
+"3","Amoonguss","amoonguss",17,591,"poison","grass",30,80,85,70,85,114
+"4","Araquanid","araquanid",6,752,"bug","water",42,132,50,92,70,68
+"5","Arcanine","arcanine",35,59,"fire",NA,95,80,100,80,110,90
+"6","Audino","audino",1,531,"normal",NA,50,86,60,86,60,103
+"7","Azumarill","azumarill",1,184,"fairy","water",50,80,60,80,50,100
+"8","Bisharp","bisharp",3,625,"steel","dark",70,70,60,100,125,65
+"9","Blastoise","blastoise",1,9,"water",NA,78,105,85,100,83,79
+"10","Blaziken","blaziken",1,257,"fighting","fire",80,70,110,70,120,80
+"11","Breloom","breloom",2,286,"fighting","grass",70,60,60,80,130,60
+"12","Buzzwole","buzzwole",3,794,"fighting","bug",79,53,53,139,139,107
+"13","Camerupt","camerupt",3,323,"ground","fire",40,75,105,70,100,70
+"14","Carracosta","carracosta",1,565,"rock","water",32,65,83,133,108,74
+"15","Celesteela","celesteela",26,797,"flying","steel",61,101,107,103,101,97
+"16","Chandelure","chandelure",1,609,"fire","ghost",80,90,145,90,55,60
+"17","Charizard","charizard",18,6,"flying","fire",100,85,109,78,84,78
+"18","Clefairy","clefairy",6,35,"fairy",NA,35,65,60,48,45,70
+"19","Cresselia","cresselia",14,488,"psychic",NA,85,130,75,120,70,120
+"20","Dragonite","dragonite",2,149,"flying","dragon",80,100,100,95,134,91
+"21","Drampa","drampa",1,780,"dragon","normal",36,91,135,85,60,78
+"22","Drifblim","drifblim",2,426,"flying","ghost",80,54,90,44,80,150
+"23","Eevee","eevee",3,133,"normal",NA,55,65,45,50,55,55
+"24","Espeon","espeon",3,196,"psychic",NA,110,95,130,60,65,65
+"25","Excadrill","excadrill",1,530,"steel","ground",88,65,50,60,135,110
+"26","Exeggutor Alola Form","exeggutor-alola",1,10114,"dragon","grass",45,75,125,85,105,95
+"27","Ferrothorn","ferrothorn",3,598,"steel","grass",20,116,54,131,94,74
+"28","Florges","florges",1,671,"fairy",NA,75,154,112,68,65,78
+"29","Garchomp","garchomp",18,445,"ground","dragon",102,85,80,95,130,108
+"30","Gardevoir","gardevoir",4,282,"fairy","psychic",80,115,125,65,65,68
+"31","Gastrodon","gastrodon",6,423,"ground","water",39,82,92,68,83,111
+"32","Gengar","gengar",10,94,"poison","ghost",110,75,130,60,65,60
+"33","Gigalith","gigalith",3,526,"rock",NA,25,80,60,130,135,85
+"34","Golduck","golduck",3,55,"water",NA,85,80,95,78,82,80
+"35","Goodra","goodra",1,706,"dragon",NA,80,150,110,70,100,90
+"36","Gothitelle","gothitelle",6,576,"psychic",NA,65,110,95,95,55,70
+"37","Greninja","greninja",1,658,"dark","water",122,71,103,67,95,72
+"38","Gyarados","gyarados",8,130,"flying","water",81,100,60,79,125,95
+"39","Hariyama","hariyama",5,297,"fighting",NA,50,60,40,60,120,144
+"40","Hawlucha","hawlucha",1,701,"flying","fighting",118,63,74,75,92,78
+"41","Heatran","heatran",5,485,"steel","fire",77,106,130,106,90,91
+"42","Hitmontop","hitmontop",1,237,"fighting",NA,70,110,35,95,95,50
+"43","Hydreigon","hydreigon",1,635,"dragon","dark",98,90,125,90,105,92
+"44","Incineroar","incineroar",21,727,"dark","fire",60,90,80,90,115,95
+"45","Jynx","jynx",1,124,"psychic","ice",95,95,115,35,50,65
+"46","Kangaskhan","kangaskhan",4,115,"normal",NA,90,80,40,80,95,105
+"47","Kartana","kartana",29,798,"steel","grass",109,31,59,131,181,59
+"48","Kommo-o","kommo-o",4,784,"fighting","dragon",85,105,100,125,110,75
+"49","Krookodile","krookodile",5,553,"dark","ground",92,70,65,80,117,95
+"50","Landorus Therian Form","landorus-therian",50,10021,"flying","ground",91,80,105,90,145,89
+"51","Latias","latias",2,380,"psychic","dragon",110,130,110,90,80,80
+"52","Lilligant","lilligant",3,549,"grass",NA,90,75,110,75,60,70
+"53","Lucario","lucario",3,448,"steel","fighting",90,70,115,70,110,70
+"54","Ludicolo","ludicolo",2,272,"grass","water",70,100,90,70,70,80
+"55","Lurantis","lurantis",1,754,"grass",NA,45,90,80,90,105,70
+"56","Magnezone","magnezone",2,462,"steel","electric",60,90,130,115,70,70
+"57","Mandibuzz","mandibuzz",5,630,"flying","dark",80,95,55,105,65,110
+"58","Manectric","manectric",8,310,"electric",NA,105,60,105,60,75,70
+"59","Marowak Alola Form","marowak-alola",12,10115,"ghost","fire",45,80,50,110,80,60
+"60","Metagross","metagross",29,376,"psychic","steel",70,90,95,130,135,80
+"61","Milotic","milotic",7,350,"water",NA,81,125,100,79,60,95
+"62","Mimikyu","mimikyu-disguised",18,778,"fairy","ghost",96,105,50,80,90,55
+"63","Mudsdale","mudsdale",8,750,"ground",NA,35,85,55,100,125,100
+"64","Muk Alola Form","muk-alola",10,10113,"dark","poison",50,100,65,75,105,105
+"65","Murkrow","murkrow",2,198,"flying","dark",91,42,85,42,85,60
+"66","Naganadel","naganadel",2,804,"poison","dragon",121,73,127,73,73,73
+"67","Nidoking","nidoking",2,34,"ground","poison",85,75,85,77,102,81
+"68","Nihilego","nihilego",11,793,"poison","rock",103,131,127,47,53,109
+"69","Ninetales Alola Form","ninetales-alola",8,10104,"fairy","ice",109,100,81,75,67,73
+"70","Oranguru","oranguru",1,765,"psychic","normal",60,110,90,80,60,90
+"71","Pelipper","pelipper",4,279,"flying","water",65,70,95,100,50,60
+"72","Persian Alola Form","persian-alola",8,10108,"dark",NA,115,65,75,60,60,65
+"73","Pheromosa","pheromosa",4,795,"fighting","bug",151,37,137,37,137,71
+"74","Politoed","politoed",3,186,"water",NA,70,100,90,75,75,90
+"75","Porygon-Z","porygon-z",2,474,"normal",NA,90,75,135,70,80,85
+"76","Porygon2","porygon2",27,233,"normal",NA,60,95,105,90,80,85
+"77","Raichu","raichu",2,26,"electric",NA,110,80,90,55,90,60
+"78","Raichu Alola Form","raichu-alola",1,10100,"psychic","electric",110,85,95,50,85,60
+"79","Reuniclus","reuniclus",1,579,"psychic",NA,30,85,125,75,65,110
+"80","Rotom Wash Rotom","rotom-wash",1,10009,"water","electric",86,107,105,107,65,50
+"81","Salamence","salamence",9,373,"flying","dragon",100,80,110,80,135,95
+"82","Sandslash Alola Form","sandslash-alola",1,10102,"steel","ice",65,65,25,120,100,75
+"83","Scizor","scizor",1,212,"steel","bug",65,80,55,100,130,70
+"84","Scrafty","scrafty",5,560,"fighting","dark",58,115,45,115,90,65
+"85","Seismitoad","seismitoad",1,537,"ground","water",74,75,85,75,95,105
+"86","Serperior","serperior",1,497,"grass",NA,113,95,75,95,75,75
+"87","Slowbro","slowbro",1,80,"psychic","water",30,80,100,110,75,95
+"88","Slowking","slowking",1,199,"psychic","water",30,110,100,80,75,95
+"89","Smeargle","smeargle",8,235,"normal",NA,75,45,20,35,20,55
+"90","Snorlax","snorlax",39,143,"normal",NA,30,110,65,65,110,160
+"91","Stakataka","stakataka",1,805,"rock","steel",13,101,53,211,131,63
+"92","Staraptor","staraptor",1,398,"flying","normal",100,60,50,70,120,85
+"93","Suicune","suicune",3,245,"water",NA,85,115,90,115,75,100
+"94","Tapu Bulu","tapu-bulu",20,787,"fairy","grass",75,95,85,115,130,70
+"95","Tapu Fini","tapu-fini",48,788,"fairy","water",85,130,95,115,75,70
+"96","Tapu Koko","tapu-koko",65,785,"fairy","electric",130,75,95,85,115,70
+"97","Tapu Lele","tapu-lele",36,786,"fairy","psychic",95,115,130,75,85,70
+"98","Togedemaru","togedemaru",4,777,"steel","electric",96,73,40,63,98,65
+"99","Togekiss","togekiss",2,468,"flying","fairy",80,115,120,95,50,85
+"100","Torkoal","torkoal",5,324,"fire",NA,20,70,85,140,85,70
+"101","Tsareena","tsareena",1,763,"grass",NA,72,98,50,98,120,72
+"102","Tyranitar","tyranitar",25,248,"dark","rock",61,100,95,110,134,100
+"103","Vanilluxe","vanilluxe",1,584,"ice",NA,79,95,110,85,95,71
+"104","Venusaur","venusaur",2,3,"poison","grass",80,100,100,83,82,80
+"105","Virizion","virizion",1,640,"fighting","grass",108,129,90,72,90,91
+"106","Vivillon","vivillon",1,666,"flying","bug",89,50,90,50,52,80
+"107","Volcarona","volcarona",5,637,"fire","bug",100,105,135,65,60,85
+"108","Weavile","weavile",1,461,"ice","dark",125,85,45,65,120,70
+"109","Whimsicott","whimsicott",8,547,"fairy","grass",116,75,77,85,67,60
+"110","Xurkitree","xurkitree",9,796,"electric",NA,83,71,173,71,89,83
+"111","Zapdos","zapdos",16,145,"flying","electric",100,90,125,85,90,90
