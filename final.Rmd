@@ -1,0 +1,326 @@
+---
+title: "Competitive Pokemon"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+library(stringr)
+library(ggplot2)
+library(dplyr)
+library(httr)
+library(rjson)
+rotate <- function(x) t(apply(x, 2, rev))
+```
+# Competitive Pokemon
+
+In this project, I am looking to answer the question, what makes a good competitive team in Pokemon? Pokemon is currently in its 7th Generation with its latest release in November 2017, Ultra Sun and Ultra Moon.
+
+There is a huge competitive community of Pokemon and many applications that let you build teams and fight with other players.
+
+There are a huge amount of variables that may go into battling. Here are some of them:
+
+- Move Set
+
+- Ability
+
+- Base Stats
+
+- Nature
+
+- Typing
+
+- Held Item
+
+- Effort Values (EV)*
+
+- Individual Values (IV)*
+
+## Scraping
+
+We want to make a good competitive Pokemon team, so we should look at what was successful in previous competitions.
+
+We will be scraping data from the official Pokemon site of Video Game Championship (VGC) tournaments in the Master's division (we will be excluding Juniors and Seniors divisions). These are double battles which changes the dynamic from single battles (e.g. increasing the importance of the move _Protect_ so multi-pokemon-hitting moves like _Earthquake_ don't attack allies)
+
+
+```{r setup_scrape}
+
+website <- "https://www.pokemon.com/us/play-pokemon/"
+page_suffix = "/vg-masters/"
+pages <- c("internationals/2018/latin-america/vg-masters/",
+"sindelfingen-regionals-2018/vg-masters/",
+"portland-regionals-2018/vg-masters/",
+"charlotte-regionals-2018/vg-masters/",
+"costa-mesa-regionals-2018/vg-masters/",
+"collinsville-regionals-2018/vg-masters/",
+"malmo-regionals-2018/vg-masters/",
+"internationals/2018/oceania/vg-masters/",
+"leipzig-regionals-2018/vg-masters/",
+"dallas-regionals-2018/vg-masters/",
+"memphis-regionals-2018/vg-masters/",
+"san-jose-regionals-2018/vg-masters/",
+"internationals/2018/europe/vgc-masters/",
+"vancouver-regionals-2018/vg-masters/",
+"daytona-regionals-2018/vg-masters/",
+"hartford-regionals-2018/vg-masters/",
+"bremen-regionals-2018/vg-masters/",
+"fort-wayne-regionals-2018/vg-masters/"
+)
+team <- "div.team"
+trainer <- ".banner h2"
+trainer_rank <- ".banner p"
+pokemon_selector <- "div.body .row-wrapper .pokemon"
+page <- pages[1]
+teams <- data.frame(matrix(ncol=0, nrow=0))
+competing_pokemon <- data.frame(matrix(ncol=0, nrow=0))
+scrape_vector <- function(nodes, selector) nodes %>%
+  html_nodes(selector) %>%
+  html_text() %>%
+  str_trim() %>%
+  str_replace("\\s+", " ")
+```
+
+In our scraping we will be attempting to find the above information for competitive pokemon, except for the asterisks. Individual values and effort values are stats factor into the final stats of a Pokemon in addition to the Base Stat. While this is an important calculation, in the competitive scene, we can assume that the IVs and EVs are maxed out, but the distribution of EVs should look pretty similar to how the Base Stat for each Pokemon is distributed. EVs and IVs are generally hidden and games and the Pokemon VGC Tournament standings do not release EV and IV information, so we cannot track these.
+
+In scraping the webpages, the Pokemon website was weirdly cooperative with me. The URLs followed the same pattern, each standings page had the same mark up, and they provided enough information for me to run on.
+
+```{r scrape}
+rows <- 0
+
+for (page in pages) {
+  webpage <- read_html(paste(website,page,sep=""))
+  # year in URL used to determine what year the team was used
+  year <- strtoi(str_match(page, "(20[0-9]{2})"))
+
+  # assemble teams with columns: trainer, trainer_rank, team_id, year
+  team_nodes <- html_nodes(webpage, team)
+  num_teams <- length(team_nodes)
+  trainers <- scrape_vector(team_nodes, trainer)
+  trainer_ranks <- team_nodes %>%
+    html_node(trainer_rank) %>%
+    html_text() %>%
+    str_trim() %>%
+    str_replace("\\s+", " ")
+  page_frame <- data.frame(
+    year=year,
+    trainer=trainers,
+    trainer_rank=trainer_ranks,
+    team_id=rows:(rows+num_teams-1))
+  # assemble pokemon on teams with columns: team_id, name, ability, move(1/2/3/4), nature, held item
+  pokemon_nodes <- team_nodes %>%
+    html_nodes(pokemon_selector)
+  num_pokemons <- length(pokemon_nodes)
+  pokemon_names <- scrape_vector(pokemon_nodes, ".banner")
+  pokemon_abilities <- scrape_vector(pokemon_nodes, ".ability li")
+  pokemon_held_items <- scrape_vector(pokemon_nodes, ".held-item li")
+  pokemon_natures <- scrape_vector(pokemon_nodes, ".nature li")
+  pokemon_frame <- scrape_vector(pokemon_nodes, ".moves ul li") %>%
+    matrix(nrow=4, ncol=num_pokemons) %>%
+    rotate() %>%
+    as.data.frame()
+  colnames(pokemon_frame) <- c("move1", "move2", "move3", "move4")
+  pokemon_frame$name = pokemon_names
+  pokemon_frame$team_id = floor((0:(num_pokemons-1))/6) + rows
+  pokemon_frame$held_item = pokemon_held_items
+  pokemon_frame$nature = pokemon_natures
+  pokemon_frame$ability = pokemon_abilities
+  rows = rows + num_teams
+
+  #append the new data on this page to the teams and competing pokemon
+  teams <- rbind(teams, page_frame)
+  competing_pokemon <- rbind(competing_pokemon, pokemon_frame)
+}
+head(teams)
+head(competing_pokemon)
+```
+### Pokemon Stat Data
+
+Now that we got our teams, we need to get the rest of the characteristics we mentioned before: Base Stats, and Typing.
+
+There are a lot of 'Pokedex's, but each of them have their own issues. One issue could be they did not provide all the attributes we wanted. Or, maybe the attributes were spread out among multiple spreadsheets. Or, (most commonly) the spreadsheets did not provide the full data about every pokemon currently. Some would exclude the 7th generation which may also affect our attributes since Base Stats are known to change sporadically over the generations.
+
+So, we get our data from a RESTful API that has the least problems. While it has Generation 7 data, it did not include the new Pokemon from Ultra Sun and Ultra Moon which meant I had to input manually below. Luckily only two new Pokemon were used competitively (Naganadel, Stakataka).
+
+Another issue was formes. Many Pokemon take 'formes'. For some Pokemon, like Landorus Therian Forme and Alolan Ninetales, the scraping produced correct namings that our API understands. However, we have some Pokemon who change formes in battle due to their abilities. Competitively, only Aegislash and Mimikyu are known to change formes during battle. They produce a difficult decision since their Base Stats do change during battle, so I only decided to query their starting formes when they enter battle.
+
+```{r joining}
+pokemon <- data.frame(matrix(ncol=0, nrow=0))
+
+# aegislash and mimikyu have special abilities that changes their form during battle.
+# We'll assume their starting forms in battle
+form_pokemon = data.frame(
+  api_name = c("aegislash", "mimikyu"),
+  form_name = c("shield"  , "disguised")
+)
+competing_pokemon <- competing_pokemon %>%
+  mutate(api_name=name %>%
+           tolower() %>%
+           gsub("form(e?)", "", .) %>%
+           gsub("rotom$", "", .) %>%
+           str_trim() %>%
+           gsub("\\s", "-", .)) %>%
+  left_join(form_pokemon) %>%
+  mutate(api_name=ifelse(is.na(form_name), api_name, paste(api_name, form_name, sep="-")))
+unique_pokemon <- competing_pokemon %>%
+  select(name, api_name) %>%
+  group_by(name=gsub("(F|f)orme", "Form", name), api_name) %>%
+  summarize(num_teams=n())
+pokemon_datum = data.frame(matrix(ncol=0, nrow=0))
+pokemon = unique_pokemon$api_name[1]
+for (pokemon in unique_pokemon$api_name) {
+  # two pokemon, naganadel and stakataka, are introduced in a later version than our API covers, so we manually enter their details
+  if (pokemon == "naganadel") {
+    poke_data = data.frame(
+      id=804,
+      api_name=pokemon,
+      type1="poison",
+      type2="dragon",
+      hp=73,
+      atk=73,
+      def=73,
+      spatk=127,
+      spdef=73,
+      speed=121
+    )
+  } else if (pokemon == "stakataka") {
+    poke_data = data.frame(
+      id=805,
+      api_name=pokemon,
+      type1="rock",
+      type2="steel",
+      hp=63,
+      atk=131,
+      def=211,
+      spatk=53,
+      spdef=101,
+      speed=13
+    )
+  } else {
+    url = paste("https://pokeapi.co/api/v2/pokemon/", pokemon, sep="")
+    tryCatch({
+      pokemon_json = fromJSON(file=url)
+    }, error=function(e) {
+      print("Failure:")
+      print(pokemon)
+    })
+    poke_data = data.frame(
+      id=pokemon_json$id,
+      api_name=pokemon,
+      type1 = pokemon_json$types[[1]]$type$name,
+      type2 = ifelse(length(pokemon_json$types) == 1, NA, pokemon_json$types[[2]]$type$name)
+    )
+    for (stat in pokemon_json$stats) {
+      stat_name = stat$stat$name
+      if (stat_name == "special-defense") {
+        poke_data$spdef = stat$base_stat
+      } else if (stat_name == "special-attack") {
+        poke_data$spatk = stat$base_stat
+      } else if (stat_name == "speed") {
+        poke_data$speed = stat$base_stat
+      } else if (stat_name == "defense") {
+        poke_data$def = stat$base_stat
+      } else if (stat_name == "attack") {
+        poke_data$atk = stat$base_stat
+      } else if (stat_name == "hp") {
+        poke_data$hp = stat$base_stat
+      }
+    }
+  }
+  pokemon_datum = rbind(pokemon_datum, poke_data)
+}
+head(pokemon_datum, 30)
+unique_pokemon <- unique_pokemon %>%
+  left_join(pokemon_datum)
+write.csv(unique_pokemon, "C:/Users/Jeremy/Documents/cmsc320/pokemon.csv")
+```
+
+## Superficial Analysis
+
+### Pokemon Frequency
+
+In our first plot, we look at the most used Pokemon. Introduced in Pokemon Sun and Moon, Tapu Koko takes the top spot with its sister pokemon, Tapu Fini and Tapu Bulu, also up there. Tapu Koko is an Electric/Fairy type with a decent signature ability that prevents 'stalling' (a game where little progress is made in fainting the stalling Pokemon). Second place is Landorus Therian Forme, a Ground/Flying type. This pokemon gets the ability Intimidate which cuts the Attack stat of the opponent's Pokemon. It also gets the move Earthquake and as a ground type, it would hit harder. Snorlax also cracks the top list because it has little type weaknesses and has access to the move Belly Drum which maxes out its Attack stat at an HP cost.
+
+```{r basic_plot, echo=FALSE}
+
+competing_pokemon %>%
+  group_by(name) %>%
+  summarize(num_trainers=n()) %>%
+  arrange(desc(num_trainers)) %>%
+  filter(num_trainers >= 20) %>%
+  ggplot(aes(x=reorder(name, -num_trainers), y=num_trainers)) +
+    geom_bar(stat="identity") +
+    ggtitle("Frequency of Each Pokemon in Competitive") +
+    xlab("Pokemon Name") +
+    ylab("Frequency (# Teams)") +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+### Type Frequency
+
+Calculating the percentages of each type occurence, we can see some very revealing things. The percentages sum to above 100% because Pokemon can hold two types, so the upper bound of types is 200%.
+
+Fairy is by far the most common type. This is likely because Dragon-type pokemon usually have a high attack statistic and generally are weak to Fairy types. Dark types are also weak to Fairies, and they are used relatively common competitively.
+
+In order to counter Fairies, teams also have a Steel type, since Fairies are weak to Steel, and the type generally has access to a set of moves that set up 'entry hazards'. We also have very common Ground and Fire users to counter Steel types.
+
+Some uncommon types include Bug, due to a low Stat Total; Ice, probably due to its many weaknesses to commonly used types; Fighting, probably due to Normal typing having better bulk due to type weaknesses.
+
+Another interesting statistic is that Ghost types appear more in the higher ranks and Psychic types appearing less in higher ranks.
+
+```{r type_counts, echo=FALSE}
+fully_joined <- competing_pokemon %>%
+  left_join(unique_pokemon, by="api_name") %>%
+  left_join(teams, by="team_id")
+type1_counts <- fully_joined %>%
+  group_by(trainer_rank, type1) %>%
+  summarize(num_type1=n()) %>%
+  mutate(type=type1)
+type2_counts <- fully_joined %>%
+  filter(!is.na(type2)) %>%
+  group_by(trainer_rank, type2) %>%
+  summarize(num_type2=n()) %>%
+  mutate(type=type2)
+type_counts <- type1_counts %>%
+  full_join(type2_counts, by=c("trainer_rank", "type")) %>%
+  mutate(num_type=ifelse(is.na(num_type1), 0, num_type1) + ifelse(is.na(num_type2), 0, num_type2))
+type_counts <- fully_joined %>%
+  group_by(trainer_rank) %>%
+  summarize(num=n()) %>%
+  right_join(type_counts) %>%
+  mutate(percent_type=num_type*100.0/num, short_rank = gsub("Masters Division ", "", trainer_rank))
+  
+type_counts %>%
+  ggplot(aes(x=short_rank, y=percent_type, fill=type)) +
+  geom_bar(stat="identity") + 
+  scale_fill_manual(values=c("#A6B91A", "#705746", "#6F35FC", "#F7D02C", "#D685AD", "#C22E28", "#EE8130", "#A98FF3", "#735797", "#7AC74C", "#E2BF65", "#96D9D6", "#A8A77A", "#A33EA1", "#F95587", "#B6A136", "#B7B7CE", "#6390F0")) +
+  ggtitle("Type Distribution of Championships") +
+  xlab("Title Earned") +
+  ylab("% of Pokemon With Type")
+```
+## Hypothesis 1: Base Stat Total is related to rank
+
+Rejected. The P value is about 0.14 meaning that we have issues with the null hypothesis. We want our p value to be below 0.05.
+
+```{r regression}
+mutated <- fully_joined %>%
+  mutate(rank=ifelse(trainer_rank == "Masters Division Champion", 1,
+                     ifelse(trainer_rank=="Masters Division Quarterfinalist", 2,
+                            ifelse(trainer_rank == "Masters Division Runner-Up", 3, 4))),
+         total_stat=hp+atk+def+spatk+spdef+speed)
+regression <- lm(data=mutated, total_stat~rank)
+regression %>% broom::tidy()
+```
+
+## Hypothesis 2: Types are related to rank
+
+```{r hyp_2}
+mutated <- mutated %>%
+  mutate(concat_type = factor(paste(type1, type2)))
+regression <- lm(data=mutated,type1~rank)
+regression %>% broom::tidy()
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
