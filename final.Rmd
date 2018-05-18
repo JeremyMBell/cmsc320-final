@@ -312,12 +312,13 @@ regression <- lm(data=mutated, total_stat~rank)
 regression %>% broom::tidy()
 ```
 
-## Hypothesis 2: Types are related to rank
+## Hypothesis 2: The attack stat is related to natures
+
+
+Accepted. Some natures are very important to attackers like Adamant (our intercept), but some natures aren't visible in the data set often so the pvalue can run high for it.
 
 ```{r hyp_2}
-mutated <- mutated %>%
-  mutate(concat_type = factor(paste(type1, type2)))
-regression <- lm(data=mutated,type1~rank)
+regression <- lm(data=fully_joined,atk~nature)
 regression %>% broom::tidy()
 ```
 
